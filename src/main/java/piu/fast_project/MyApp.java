@@ -3,15 +3,15 @@ package piu.fast_project;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -21,7 +21,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import java.io.File;
 import java.io.IOException;
 
 public class MyApp extends Application {
@@ -161,38 +163,91 @@ public class MyApp extends Application {
         profileGrid.setGridLinesVisible(true);
         //profileGrid.setVgap(10);
         profileGrid.setAlignment(Pos.CENTER);
-        profileGrid.setMaxSize(405,20);
-
-        VBox userData = new VBox();
-        userData.setSpacing(10);
-        userData.setAlignment(Pos.CENTER);
 
         ImageView photoUser = new ImageView("file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/фото 3x4.jpg");
+        photoUser.setFitHeight(268);
+        photoUser.setFitWidth(220);
+        photoUser.setPreserveRatio(true);
 
-        Button editDataUser = new Button("Редактировать");
-        editDataUser.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-        editDataUser.setTextFill(Color.WHITE);
-        editDataUser.setTextAlignment(TextAlignment.CENTER);
-        editDataUser.setStyle("-fx-background-color: #182E3E; ");
-        editDataUser.setPrefSize(300, 50);
+        Button editPhotoUserButton = new Button("Изменить фото");
+        editPhotoUserButton.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        editPhotoUserButton.setTextFill(Color.WHITE);
+        editPhotoUserButton.setTextAlignment(TextAlignment.CENTER);
+        editPhotoUserButton.setStyle("-fx-background-color: #182E3E; ");
+        editPhotoUserButton.setPrefSize(225, 50);
 
-        userData.getChildren().addAll(photoUser,editDataUser);
+        Button editDataUserButton = new Button("Редактировать данные");
+        editDataUserButton.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        editDataUserButton.setTextFill(Color.WHITE);
+        editDataUserButton.setTextAlignment(TextAlignment.CENTER);
+        editDataUserButton.setStyle("-fx-background-color: #182E3E; ");
+        editDataUserButton.setPrefSize(325, 50);
 
-        HBox fullDataUser = new HBox();
-        fullDataUser.getChildren().addAll(userData,profileGrid);
-        fullDataUser.setSpacing(10);
-        fullDataUser.setAlignment(Pos.CENTER);
+        editPhotoUserButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Выберите фото");
+                File selectedFile = fileChooser.showOpenDialog(stage);
+                if (selectedFile != null) {
+                    Image image = new Image(selectedFile.toURI().toString());
+                    photoUser.setImage(image);
+                }
+            }
+        });
+
+        editPhotoUserButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                editPhotoUserButton.setStyle("-fx-background-color: #085b96");
+            }
+        });
+
+        editPhotoUserButton.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                editPhotoUserButton.setStyle("-fx-background-color: #182E3E");
+            }
+        });
+
+        editDataUserButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                editDataUserButton.setStyle("-fx-background-color: #085b96");
+            }
+        });
+
+        editDataUserButton.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                editDataUserButton.setStyle("-fx-background-color: #182E3E");
+            }
+        });
+
+        VBox fullPhoto = new VBox();
+        fullPhoto.setSpacing(10);
+        fullPhoto.setAlignment(Pos.CENTER);
+        fullPhoto.getChildren().addAll(photoUser,editPhotoUserButton);
+
+        VBox fullData = new VBox();
+        fullData.setSpacing(10);
+        fullData.setAlignment(Pos.CENTER);
+        fullData.getChildren().addAll(profileGrid,editDataUserButton);
+
+        HBox userData = new HBox();
+        userData.setSpacing(10);
+        userData.setAlignment(Pos.CENTER);
+        userData.getChildren().addAll(fullPhoto, fullData);
 
         BorderPane profilePane = new BorderPane();
         profilePane.setTop(menu);
-        profilePane.setCenter(fullDataUser);
+        profilePane.setCenter(userData);
         profilePane.setStyle("-fx-background-color: linear-gradient(to bottom, #182E3E, white);");
 
         ImageView gerbImage = new ImageView("file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/gerb.png");
         ImageView gerbImage1 = new ImageView("file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/gerb.png");
         profilePane.setRight(gerbImage);
         profilePane.setLeft(gerbImage1);
-
 
         Label fullNameLabel = new Label("Фамилия, имя");
         fullNameLabel.setStyle("-fx-text-fill: #182E3E;");
@@ -239,8 +294,44 @@ public class MyApp extends Application {
         Text fullNameText = new Text("Замуруев Роман");
         fullNameText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
         fullNameText.setFill(Color.rgb(24,46,62));
-        /*profileGrid.setHalignment(fullNameText, HPos.CENTER);
-        profileGrid.setValignment(fullNameText, VPos.CENTER);*/
+        profileGrid.setHalignment(fullNameText, HPos.CENTER);
+        profileGrid.setValignment(fullNameText, VPos.CENTER);
+
+        Text serviceNumberEmployeeText = new Text("111111");
+        serviceNumberEmployeeText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        serviceNumberEmployeeText.setFill(Color.rgb(24,46,62));
+        profileGrid.setHalignment(serviceNumberEmployeeText, HPos.CENTER);
+        profileGrid.setValignment(serviceNumberEmployeeText, VPos.CENTER);
+
+        Text passportText = new Text("0879 403254");
+        passportText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        passportText.setFill(Color.rgb(24,46,62));
+        profileGrid.setHalignment(passportText, HPos.CENTER);
+        profileGrid.setValignment(passportText, VPos.CENTER);
+
+        Text phoneText = new Text("89153967098");
+        phoneText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        phoneText.setFill(Color.rgb(24,46,62));
+        profileGrid.setHalignment(phoneText, HPos.CENTER);
+        profileGrid.setValignment(phoneText, VPos.CENTER);
+
+        Text rankText = new Text("Лейтенант");
+        rankText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        rankText.setFill(Color.rgb(24,46,62));
+        profileGrid.setHalignment(rankText, HPos.CENTER);
+        profileGrid.setValignment(rankText, VPos.CENTER);
+
+        Text salaryText = new Text("90.000");
+        salaryText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        salaryText.setFill(Color.rgb(24,46,62));
+        profileGrid.setHalignment(salaryText, HPos.CENTER);
+        profileGrid.setValignment(salaryText, VPos.CENTER);
+
+        Text mailText = new Text("r.zamuruev@vk.com");
+        mailText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        mailText.setFill(Color.rgb(24,46,62));
+        profileGrid.setHalignment(mailText, HPos.CENTER);
+        profileGrid.setValignment(mailText, VPos.CENTER);
 
         profileGrid.add(serviceNumberLabel,0,0);
         profileGrid.add(fullNameLabel,0,1);
@@ -250,7 +341,129 @@ public class MyApp extends Application {
         profileGrid.add(salaryLabel,0,5);
         profileGrid.add(mailLabel,0,6);
 
+        Button saveDataUserButton = new Button("Сохранить");
+        saveDataUserButton.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+        saveDataUserButton.setTextFill(Color.WHITE);
+        saveDataUserButton.setTextAlignment(TextAlignment.CENTER);
+        saveDataUserButton.setStyle("-fx-background-color: #182E3E; ");
+        saveDataUserButton.setPrefSize(325, 50);
+
+        String fullName = fullNameText.getText();
+        TextField fullNameField = new TextField(fullName);
+        fullNameField.setAlignment(Pos.CENTER);
+
+        String passport = passportText.getText();
+        TextField passportField = new TextField(passport);
+        passportField.setAlignment(Pos.CENTER);
+
+        String phone = phoneText.getText();
+        TextField phoneField = new TextField(phone);
+        phoneField.setAlignment(Pos.CENTER);
+
+        String mail = mailText.getText();
+        TextField mailField = new TextField(mail);
+        mailField.setAlignment(Pos.CENTER);
+
+        editDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                profileGrid.getChildren().remove(fullNameText);
+                fullNameField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
+                fullNameField.setStyle("-fx-text-fill: red");
+                fullNameField.setMinSize(50,5);
+                fullNameText.setText(fullNameField.getText());
+
+                /*String serviceNumberEmployee = serviceNumberEmployeeText.getText();
+                profileGrid.getChildren().remove(serviceNumberEmployeeText);
+                TextField serviceNumberEmployeeField = new TextField(serviceNumberEmployee);
+                serviceNumberEmployeeField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                serviceNumberEmployeeField.setStyle("-fx-text-fill: #182E3E");
+                serviceNumberEmployeeField.setMinSize(260,45);*/
+
+                profileGrid.getChildren().remove(passportText);
+                passportField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
+                passportField.setStyle("-fx-text-fill: red");
+                passportField.setMinSize(50,5);
+                passportText.setText(passportField.getText());
+
+                profileGrid.getChildren().remove(phoneText);
+                phoneField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
+                phoneField.setStyle("-fx-text-fill: red");
+                phoneField.setMinSize(50,5);
+                phoneText.setText(phoneField.getText());
+
+                /*String rank = rankText.getText();
+                profileGrid.getChildren().remove(rankText);
+                TextField rankField = new TextField(rank);
+                rankField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                rankField.setStyle("-fx-text-fill: #182E3E");
+                rankField.setMinSize(260,45);
+
+                String salary = salaryText.getText();
+                profileGrid.getChildren().remove(salaryText);
+                TextField salaryField = new TextField(salary);
+                salaryField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                salaryField.setStyle("-fx-text-fill: #182E3E");
+                salaryField.setMinSize(260,45);*/
+
+                profileGrid.getChildren().remove(mailText);
+
+                mailField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
+                mailField.setStyle("-fx-text-fill: red");
+                mailField.setMinSize(50,5);
+                mailText.setText(mailField.getText());
+
+                profileGrid.setMaxSize(500,20);
+                profileGrid.add(fullNameField,1,1);
+                profileGrid.add(passportField,1,2);
+                profileGrid.add(phoneField,1,3);
+                //profileGrid.add(rankField,1,4);
+                //profileGrid.add(salaryField,1,5);
+                profileGrid.add(mailField,1,6);
+
+                fullData.getChildren().remove(editDataUserButton);
+                fullData.getChildren().add(saveDataUserButton);
+            }
+        });
+
+        saveDataUserButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                saveDataUserButton.setStyle("-fx-background-color: #085b96");
+            }
+        });
+
+        saveDataUserButton.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                saveDataUserButton.setStyle("-fx-background-color: #182E3E");
+            }
+        });
+
+        profileGrid.add(serviceNumberEmployeeText,1,0);
         profileGrid.add(fullNameText,1,1);
+        profileGrid.add(passportText,1,2);
+        profileGrid.add(phoneText,1,3);
+        profileGrid.add(rankText,1,4);
+        profileGrid.add(salaryText,1,5);
+        profileGrid.add(mailText,1,6);
+        saveDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                profileGrid.getChildren().remove(fullNameField);
+                profileGrid.getChildren().remove(passportField);
+                profileGrid.getChildren().remove(phoneField);
+                profileGrid.getChildren().remove(mailField);
+                profileGrid.add(fullNameText,1,1);
+                profileGrid.add(passportText,1,2);
+                profileGrid.add(phoneText,1,3);
+                profileGrid.add(mailText,1,6);
+                fullData.getChildren().remove(saveDataUserButton);
+                fullData.getChildren().add(editDataUserButton);
+                //profileGrid.setMaxSize(600,20);
+            }
+        });
 
         Scene profile = new Scene(profilePane,1230,600);
         profileButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -587,6 +800,13 @@ public class MyApp extends Application {
                 Scene addEmployeeScene = new Scene(addEmployeeGrid,550,600);
 
                 Stage addEmployeeStage = new Stage();
+
+                addButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        addEmployeeStage.close();
+                    }
+                });
                 addEmployeeStage.setResizable(false);
                 addEmployeeStage.setTitle("Полиция");
                 addEmployeeStage.getIcons().add(new Image("file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/logo.png"));
