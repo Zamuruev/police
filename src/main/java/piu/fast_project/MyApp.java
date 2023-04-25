@@ -70,6 +70,7 @@ public class MyApp extends Application {
         Text welcomeText = new Text("Добро пожаловать в полицию!");
         welcomeText.setFill(Color.WHITE);
         welcomeText.setFont(Font.font("Helvetica", FontWeight.BOLD,50));
+        welcomeText.setTextAlignment(TextAlignment.CENTER);
 
         Button welcomeButton = new Button("Войти");
         welcomeButton.setFont(Font.font("Helvetica", FontWeight.BOLD,30));
@@ -106,9 +107,9 @@ public class MyApp extends Application {
             public void handle(ActionEvent actionEvent) {
                 if(loginField.getText().equals("admin") && passwordField.getText().equals("admin"))
                 {
-                    String login = loginField.getText();
+                    String login1 = loginField.getText();
                     loginField.clear();
-                    String password = passwordField.getText();
+                    String password1 = passwordField.getText();
                     passwordField.clear();
                     // кнопка "Список сотрудников"
                     Button employeesButton = new Button("Сотрудники");
@@ -237,11 +238,50 @@ public class MyApp extends Application {
                     profileGrid.setGridLinesVisible(true);
                     //profileGrid.setVgap(10);
                     profileGrid.setAlignment(Pos.CENTER);
+                    String url1;
+                    String id_passport1;
+                    try {
+                        String query = "SELECT id_passport FROM authorization WHERE login = ? AND password = ?";
 
-                    ImageView photoUser = new ImageView("file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/default.png");
+                        Connection connection = MySQLConnection.getInstance().getConnection();
+                        PreparedStatement preparedStatement = connection.prepareStatement(query);
+                        preparedStatement.setString(1,login1);
+                        preparedStatement.setString(2,password1);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                        resultSet.next();
+                        id_passport1 = resultSet.getString("id_passport");
+                        resultSet.close();
+                        preparedStatement.close();
+
+                        String query1 = "SELECT *FROM imageprofile WHERE id_passport = ?";
+                        PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+                        preparedStatement1.setString(1,id_passport1);
+                        ResultSet resultSet1 = preparedStatement1.executeQuery();
+                        resultSet1.next();
+                        url1 = resultSet1.getString(3);
+                        resultSet1.close();
+                        preparedStatement1.close();
+
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    ImageView photoUser = new ImageView(url1);
+                    if(photoUser.getImage().isError()){
+                     url1 = "file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/policeman.png";
+                     photoUser.setImage(new Image(url1));
+                    }
                     photoUser.setFitHeight(268);
                     photoUser.setFitWidth(220);
                     photoUser.setPreserveRatio(true);
+                    photoUser.setStyle("-fx-alignment: center;");
+
+                    GridPane photoGrid = new GridPane();
+                    photoGrid.add(photoUser,0,0);
+                    photoGrid.setStyle("-fx-border-color: #182E3E; -fx-border-width: 9px; -fx-font-weight: bold; -fx-alignment: center");
+                    photoGrid.setMaxSize(220,268);
+                    photoGrid.setPrefSize(220,268);
+                    photoGrid.setMinSize(220,268);
 
                     Button editPhotoUserButton = new Button("Изменить фото");
                     editPhotoUserButton.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
@@ -257,6 +297,7 @@ public class MyApp extends Application {
                     editDataUserButton.setStyle("-fx-background-color: #182E3E; ");
                     editDataUserButton.setPrefSize(325, 50);
 
+                    String finalUrl = url1;
                     editPhotoUserButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -265,6 +306,17 @@ public class MyApp extends Application {
                             File selectedFile = fileChooser.showOpenDialog(stage);
                             if (selectedFile != null) {
                                 Image image = new Image(selectedFile.toURI().toString());
+                                String newUrlImage = selectedFile.toURI().toString();
+                                String query  = "UPDATE imageProfile SET url = ? WHERE url = ?";
+                                Connection connection = MySQLConnection.getInstance().getConnection();
+                                try {
+                                    PreparedStatement preparedStatement = connection.prepareStatement(query);
+                                    preparedStatement.setString(1,newUrlImage);
+                                    preparedStatement.setString(2, finalUrl);
+                                    preparedStatement.executeUpdate();
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
                                 photoUser.setImage(image);
                             }
                         }
@@ -301,7 +353,7 @@ public class MyApp extends Application {
                     VBox fullPhoto = new VBox();
                     fullPhoto.setSpacing(10);
                     fullPhoto.setAlignment(Pos.CENTER);
-                    fullPhoto.getChildren().addAll(photoUser,editPhotoUserButton);
+                    fullPhoto.getChildren().addAll(photoGrid,editPhotoUserButton);
 
                     VBox fullData = new VBox();
                     fullData.setSpacing(10);
@@ -365,47 +417,63 @@ public class MyApp extends Application {
         /*profileGrid.setHalignment(serviceNumberLabel, HPos.CENTER);
         profileGrid.setValignment(serviceNumberLabel, VPos.CENTER);*/
 
-                    Text fullNameText = new Text("Замуруев Роман");
+                    Text serviceNumberText = new Text();
+                    serviceNumberText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                    serviceNumberText.setFill(Color.rgb(24,46,62));
+                    profileGrid.setHalignment(serviceNumberText, HPos.CENTER);
+                    profileGrid.setValignment(serviceNumberText, VPos.CENTER);
+
+                    Text fullNameText = new Text();
                     fullNameText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                     fullNameText.setFill(Color.rgb(24,46,62));
                     profileGrid.setHalignment(fullNameText, HPos.CENTER);
                     profileGrid.setValignment(fullNameText, VPos.CENTER);
 
-                    Text serviceNumberEmployeeText = new Text("111111");
-                    serviceNumberEmployeeText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                    serviceNumberEmployeeText.setFill(Color.rgb(24,46,62));
-                    profileGrid.setHalignment(serviceNumberEmployeeText, HPos.CENTER);
-                    profileGrid.setValignment(serviceNumberEmployeeText, VPos.CENTER);
-
-                    Text passportText = new Text("0879 403254");
+                    Text passportText = new Text();
                     passportText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                     passportText.setFill(Color.rgb(24,46,62));
                     profileGrid.setHalignment(passportText, HPos.CENTER);
                     profileGrid.setValignment(passportText, VPos.CENTER);
 
-                    Text phoneText = new Text("89153967098");
+                    Text phoneText = new Text();
                     phoneText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                     phoneText.setFill(Color.rgb(24,46,62));
                     profileGrid.setHalignment(phoneText, HPos.CENTER);
                     profileGrid.setValignment(phoneText, VPos.CENTER);
 
-                    Text rankText = new Text("Лейтенант");
+                    Text rankText = new Text();
                     rankText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                     rankText.setFill(Color.rgb(24,46,62));
                     profileGrid.setHalignment(rankText, HPos.CENTER);
                     profileGrid.setValignment(rankText, VPos.CENTER);
 
-                    Text salaryText = new Text("90.000");
+                    Text salaryText = new Text();
                     salaryText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                     salaryText.setFill(Color.rgb(24,46,62));
                     profileGrid.setHalignment(salaryText, HPos.CENTER);
                     profileGrid.setValignment(salaryText, VPos.CENTER);
 
-                    Text mailText = new Text("r.zamuruev@vk.com");
+                    Text mailText = new Text();
                     mailText.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                     mailText.setFill(Color.rgb(24,46,62));
                     profileGrid.setHalignment(mailText, HPos.CENTER);
                     profileGrid.setValignment(mailText, VPos.CENTER);
+
+                    String query = "SELECT *FROM person INNER JOIN employee ON person.id_passport = employee.id_passport WHERE person.id_passport = ?";
+                    Connection connection = MySQLConnection.getInstance().getConnection();
+                    try {
+                        PreparedStatement preparedStatement = connection.prepareStatement(query);
+                        preparedStatement.setString(1,id_passport1);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                        resultSet.next();
+                        serviceNumberText.setText(resultSet.getString("service_number"));
+                        fullNameText.setText(resultSet.getString("surname") + " " + resultSet.getString("name"));
+                        passportText.setText(id_passport1);
+                        rankText.setText(resultSet.getString("ranks"));
+                        salaryText.setText(resultSet.getString("salary"));
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
 
                     profileGrid.add(serviceNumberLabel,0,0);
                     profileGrid.add(fullNameLabel,0,1);
@@ -482,7 +550,6 @@ public class MyApp extends Application {
                 salaryField.setMinSize(260,45);*/
 
                             profileGrid.getChildren().remove(mailText);
-
                             mailField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                             mailField.setStyle("-fx-text-fill: red");
                             mailField.setMinSize(50,5);
@@ -515,7 +582,7 @@ public class MyApp extends Application {
                         }
                     });
 
-                    profileGrid.add(serviceNumberEmployeeText,1,0);
+                    profileGrid.add(serviceNumberText,1,0);
                     profileGrid.add(fullNameText,1,1);
                     profileGrid.add(passportText,1,2);
                     profileGrid.add(phoneText,1,3);
@@ -699,7 +766,6 @@ public class MyApp extends Application {
                         }
                     });
 
-
                     casesButtonList.setOnMouseExited(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent mouseEvent) {casesButtonList.setStyle("-fx-background-color: #182E3E");
@@ -736,8 +802,7 @@ public class MyApp extends Application {
                                     observableList.add(emp);
                                     employeesTable.setItems(observableList);
                                 }
-                    /*resultSet.close();
-                    pst.close();*/
+
                             } catch (SQLException e) {
                                 throw new RuntimeException(e);
                             }
