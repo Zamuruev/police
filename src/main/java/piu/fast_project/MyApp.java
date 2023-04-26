@@ -31,6 +31,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MyApp extends Application {
+    int width = 1545;
+    int height = 840;
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -101,7 +103,7 @@ public class MyApp extends Application {
         welcomePane.setStyle("-fx-background-color: linear-gradient(to bottom, #182E3E, white)");
         welcomePane.setSpacing(10);
 
-        Scene welcomeScene = new Scene(welcomePane, 1230,600);
+        Scene welcomeScene = new Scene(welcomePane, width,height);
         welcomeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -131,7 +133,6 @@ public class MyApp extends Application {
                             employeesButton.setStyle("-fx-background-color: #182E3E");
                         }
                     });
-
 
                     // кнопка "Список преступников"
                     Button gangsterButton = new Button("Преступники");
@@ -606,7 +607,7 @@ public class MyApp extends Application {
                         }
                     });
 
-                    Scene profile = new Scene(profilePane,1230,600);
+                    Scene profile = new Scene(profilePane,width,height);
                     profileButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -632,6 +633,12 @@ public class MyApp extends Application {
                     phoneEmployee.setPrefWidth(155);
                     TableColumn<Employee,String> mailEmployee = new TableColumn<>("Почта");
                     mailEmployee.setPrefWidth(155);
+                    TableColumn<Employee,Void> deleteEmployee = new TableColumn<>("Удалить");
+                    deleteEmployee.setCellFactory(cell -> new DeleteButtonCell(id_passport1));
+                    deleteEmployee.setPrefWidth(88);
+                    TableColumn<Employee,Void> profileEmployee = new TableColumn<>("Профиль");
+                    profileEmployee.setCellFactory(cell -> new fullEmployeeProfile());
+                    profileEmployee.setPrefWidth(98);
 
                     serviceNumberEmployee.setCellValueFactory(new PropertyValueFactory<>("serviceNumber"));
                     passportEmployee.setCellValueFactory(new PropertyValueFactory<>("passport"));
@@ -651,7 +658,7 @@ public class MyApp extends Application {
                     phoneEmployee.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
                     mailEmployee.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
 
-                    employeesTable.getColumns().addAll(serviceNumberEmployee,passportEmployee,surnameEmployee,nameEmployee,rankEmployee,salaryEmployee,phoneEmployee,mailEmployee);
+                    employeesTable.getColumns().addAll(serviceNumberEmployee,passportEmployee,surnameEmployee,nameEmployee,rankEmployee,salaryEmployee,phoneEmployee,mailEmployee,deleteEmployee, profileEmployee);
 
                     // кнопка "Список сотрудников"
                     Button employeesButtonList = new Button("Сотрудники");
@@ -947,6 +954,7 @@ public class MyApp extends Application {
                             addEmployeeGrid.setAlignment(Pos.CENTER);
                             addEmployeeGrid.setHgap(10);
                             addEmployeeGrid.setVgap(10);
+                            addEmployeeGrid.setPadding(new Insets(10));
                             addEmployeeGrid.setStyle("-fx-background-color: linear-gradient(to bottom, #182E3E, white);");
 
                             //addEmployeeGrid.add(serviceNumberLabel,0,0);
@@ -975,7 +983,7 @@ public class MyApp extends Application {
 
                             addEmployeeGrid.add(addButton,1,8);
 
-                            Scene addEmployeeScene = new Scene(addEmployeeGrid,550,600);
+                            Scene addEmployeeScene = new Scene(addEmployeeGrid);
 
                             Stage addEmployeeStage = new Stage();
 
@@ -1076,7 +1084,7 @@ public class MyApp extends Application {
                     employeesPane.setCenter(employeesTable);
                     employeesPane.setTop(vb);
 
-                    Scene employeesScene = new Scene(employeesPane,1230,600);
+                    Scene employeesScene = new Scene(employeesPane,width,height);
 
                     employeesButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
@@ -1371,7 +1379,7 @@ public class MyApp extends Application {
 
                             addGangsterGrid.add(addButton,1,6);
 
-                            Scene addGangsterScene = new Scene(addGangsterGrid,600,475);
+                            Scene addGangsterScene = new Scene(addGangsterGrid,width,height);
 
                             Stage addGangsterStage = new Stage();
 
@@ -1452,7 +1460,7 @@ public class MyApp extends Application {
                     gangstersPane.setCenter(gangstersTable);
                     gangstersPane.setTop(vb1);
 
-                    Scene gangstersScene = new Scene(gangstersPane,1230,600);
+                    Scene gangstersScene = new Scene(gangstersPane,width,height);
 
                     gangsterButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
