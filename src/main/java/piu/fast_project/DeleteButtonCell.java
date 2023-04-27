@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class DeleteButtonCell extends TableCell<Employee, Void> {
     private final Button deleteButton;
 
-    public DeleteButtonCell(String passport) {
+    public DeleteButtonCell() {
         deleteButton = new Button("Удалить");
         deleteButton.setFont(Font.font("Helvetica", FontWeight.BOLD,15));
         deleteButton.setTextFill(Color.WHITE);
@@ -31,21 +31,25 @@ public class DeleteButtonCell extends TableCell<Employee, Void> {
             getTableView().getItems().remove(employee);
             String queryEmployee = "DELETE FROM employee WHERE id_passport = ?";
             String queryPerson = "DELETE FROM person WHERE id_passport = ?";
+            String queryAuthorization = "DELETE FROM authorization WHERE id_passport = ?";
+            String queryImageProfile = "DELETE FROM imageprofile WHERE id_passport = ?";
             Connection connection = MySQLConnection.getInstance().getConnection();
             try {
                 PreparedStatement pstE = connection.prepareStatement(queryEmployee);
-                ResultSet resultSet = pstE.executeQuery();
-                pstE.setString(1, passport);
-                if(resultSet.next()) {
-                    pstE.executeUpdate();
-                }
+                pstE.setString(1, employee.passport);
+                pstE.executeUpdate();
+
+                PreparedStatement pstA = connection.prepareStatement(queryAuthorization);
+                pstA.setString(1,employee.passport);
+                pstA.executeUpdate();
+
+                PreparedStatement pstI = connection.prepareStatement(queryImageProfile);
+                pstI.setString(1,employee.passport);
+                pstI.executeUpdate();
 
                 PreparedStatement pstP = connection.prepareStatement(queryPerson);
-                pstP.setString(1,passport);
-                ResultSet resultSet1 = pstP.executeQuery();
-                if (resultSet1.next()) {
-                    pstP.executeUpdate();
-                }
+                pstP.setString(1,employee.passport);
+                pstP.executeUpdate();
 
             } catch (SQLException e) {
                 throw new RuntimeException(e);

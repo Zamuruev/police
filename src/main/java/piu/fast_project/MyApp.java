@@ -36,6 +36,10 @@ public class MyApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
+        // region // создание окна
+
+        // endregion
+
         // установка иконки
         stage.getIcons().add(new Image("file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/logo.png"));
 
@@ -239,8 +243,9 @@ public class MyApp extends Application {
                     profileGrid.setGridLinesVisible(true);
                     //profileGrid.setVgap(10);
                     profileGrid.setAlignment(Pos.CENTER);
-                    String url1;
+                    String url1 ="file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/policeman.png";
                     String id_passport1;
+                    ImageView photoUser = new ImageView(url1);
                     try {
                         String query = "SELECT id_passport FROM authorization WHERE login = ? AND password = ?";
 
@@ -249,29 +254,32 @@ public class MyApp extends Application {
                         preparedStatement.setString(1,login1);
                         preparedStatement.setString(2,password1);
                         ResultSet resultSet = preparedStatement.executeQuery();
-                        resultSet.next();
-                        id_passport1 = resultSet.getString("id_passport");
-                        resultSet.close();
-                        preparedStatement.close();
+                        if(resultSet.next()) {
+                            id_passport1 = resultSet.getString("id_passport");
+                            resultSet.close();
+                            preparedStatement.close();
 
-                        String query1 = "SELECT *FROM imageprofile WHERE id_passport = ?";
-                        PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
-                        preparedStatement1.setString(1,id_passport1);
-                        ResultSet resultSet1 = preparedStatement1.executeQuery();
-                        resultSet1.next();
-                        url1 = resultSet1.getString(3);
-                        resultSet1.close();
-                        preparedStatement1.close();
+                            String query1 = "SELECT *FROM imageprofile WHERE id_passport = ?";
+                            PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+                            preparedStatement1.setString(1, id_passport1);
+                            ResultSet resultSet1 = preparedStatement1.executeQuery();
+                            if(resultSet1.next())
+                            {url1 = resultSet1.getString(3);
+                                photoUser.setImage(new Image(url1));
+                                resultSet1.close();
+                            preparedStatement1.close();}
+                            else {
+                                url1 = "file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/policeman.png";
+                            }
+                        }
+                        else {
+                            id_passport1 = null;
+                        }
 
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
 
-                    ImageView photoUser = new ImageView(url1);
-                    if(photoUser.getImage().isError()){
-                     url1 = "file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/policeman.png";
-                     photoUser.setImage(new Image(url1));
-                    }
                     photoUser.setFitHeight(268);
                     photoUser.setFitWidth(220);
                     photoUser.setPreserveRatio(true);
@@ -297,7 +305,6 @@ public class MyApp extends Application {
                     editDataUserButton.setTextAlignment(TextAlignment.CENTER);
                     editDataUserButton.setStyle("-fx-background-color: #182E3E; ");
                     editDataUserButton.setPrefSize(325, 50);
-
                     String finalUrl = url1;
                     editPhotoUserButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
@@ -308,13 +315,32 @@ public class MyApp extends Application {
                             if (selectedFile != null) {
                                 Image image = new Image(selectedFile.toURI().toString());
                                 String newUrlImage = selectedFile.toURI().toString();
+                                String queryOld = "SELECT COUNT(*) FROM imageprofile WHERE id_passport = ?";
                                 String query  = "UPDATE imageProfile SET url = ? WHERE url = ?";
+                                String queryInsert = "INSERT INTO imageprofile(url,id_passport) VALUES (?,?)";
+
                                 Connection connection = MySQLConnection.getInstance().getConnection();
                                 try {
+                                    PreparedStatement preparedStatement1 = connection.prepareStatement(queryOld);
+                                    preparedStatement1.setString(1,id_passport1);
+                                    ResultSet resultSet = preparedStatement1.executeQuery();
+                                    if(!resultSet.next()) {
                                     PreparedStatement preparedStatement = connection.prepareStatement(query);
                                     preparedStatement.setString(1,newUrlImage);
                                     preparedStatement.setString(2, finalUrl);
                                     preparedStatement.executeUpdate();
+                                    preparedStatement.close();
+                                    }
+                                    else {
+                                        PreparedStatement preparedStatement = connection.prepareStatement(queryInsert);
+                                        preparedStatement.setString(1,newUrlImage);
+                                        preparedStatement.setString(2,id_passport1);
+                                        preparedStatement.executeUpdate();
+                                        preparedStatement.close();
+                                    }
+                                    preparedStatement1.close();
+                                    resultSet.close();
+
                                 } catch (SQLException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -466,12 +492,13 @@ public class MyApp extends Application {
                         PreparedStatement preparedStatement = connection.prepareStatement(query);
                         preparedStatement.setString(1,id_passport1);
                         ResultSet resultSet = preparedStatement.executeQuery();
-                        resultSet.next();
-                        serviceNumberText.setText(resultSet.getString("service_number"));
+                        if(resultSet.next())
+                        {serviceNumberText.setText(resultSet.getString("service_number"));
                         fullNameText.setText(resultSet.getString("surname") + " " + resultSet.getString("name"));
                         passportText.setText(id_passport1);
                         rankText.setText(resultSet.getString("ranks"));
                         salaryText.setText(resultSet.getString("salary"));
+                        }
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
@@ -634,10 +661,10 @@ public class MyApp extends Application {
                     TableColumn<Employee,String> mailEmployee = new TableColumn<>("Почта");
                     mailEmployee.setPrefWidth(155);
                     TableColumn<Employee,Void> deleteEmployee = new TableColumn<>("Удалить");
-                    deleteEmployee.setCellFactory(cell -> new DeleteButtonCell(id_passport1));
+                    deleteEmployee.setCellFactory(cell -> new DeleteButtonCell());
                     deleteEmployee.setPrefWidth(88);
                     TableColumn<Employee,Void> profileEmployee = new TableColumn<>("Профиль");
-                    profileEmployee.setCellFactory(cell -> new fullEmployeeProfile());
+                    profileEmployee.setCellFactory(cell -> new fullEmployeeProfile(profile,stage));
                     profileEmployee.setPrefWidth(98);
 
                     serviceNumberEmployee.setCellValueFactory(new PropertyValueFactory<>("serviceNumber"));
@@ -658,7 +685,8 @@ public class MyApp extends Application {
                     phoneEmployee.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
                     mailEmployee.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
 
-                    employeesTable.getColumns().addAll(serviceNumberEmployee,passportEmployee,surnameEmployee,nameEmployee,rankEmployee,salaryEmployee,phoneEmployee,mailEmployee,deleteEmployee, profileEmployee);
+                    employeesTable.getColumns().addAll(serviceNumberEmployee,passportEmployee,surnameEmployee,nameEmployee,rankEmployee,
+                            salaryEmployee,phoneEmployee,mailEmployee,deleteEmployee, profileEmployee);
 
                     // кнопка "Список сотрудников"
                     Button employeesButtonList = new Button("Сотрудники");
@@ -815,6 +843,8 @@ public class MyApp extends Application {
                             }
                         }
                     });
+
+
 
                     addEmployee.setOnMouseEntered(new EventHandler<MouseEvent>() {
                         @Override
@@ -1062,6 +1092,18 @@ public class MyApp extends Application {
                         @Override
                         public void handle(MouseEvent mouseEvent) {
                             searchButton.setStyle("-fx-background-color: #182E3E;");
+                        }
+                    });
+
+                    searchButton.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                           /* ObservableList<Employee> items = employeesTable.getItems();
+                            for (Employee item : items) {
+                                if (item.getMyObservableValue().equals(valueToDelete)) {
+                                    items.remove(item);
+                                }
+                            }*/
                         }
                     });
 
