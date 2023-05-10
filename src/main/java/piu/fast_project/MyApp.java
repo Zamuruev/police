@@ -23,6 +23,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.hibernate.SessionFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -783,7 +785,7 @@ public class MyApp extends Application {
                     exitButtonList.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
-                            stage.close();
+                            stage.setScene(welcomeScene);
                         }
                     });
 
@@ -1098,12 +1100,7 @@ public class MyApp extends Application {
                     searchButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
-                           /* ObservableList<Employee> items = employeesTable.getItems();
-                            for (Employee item : items) {
-                                if (item.getMyObservableValue().equals(valueToDelete)) {
-                                    items.remove(item);
-                                }
-                            }*/
+
                         }
                     });
 
@@ -1143,22 +1140,39 @@ public class MyApp extends Application {
                         }
                     });
 
-                    TableView<String> gangstersTable = new TableView();
-                    TableColumn<String,String> numberOfGangster = new TableColumn<String,String>("Серийный номер");
+                    TableView<Gangster> gangstersTable = new TableView();
+                    TableColumn<Gangster,String> numberOfGangster = new TableColumn<>("Серийный номер");
                     numberOfGangster.setPrefWidth(155);
-                    TableColumn<String,String> passportGangster = new TableColumn<String,String>("Паспорт");
+                    TableColumn<Gangster,String> passportGangster = new TableColumn<>("Паспорт");
                     passportGangster.setPrefWidth(155);
-                    TableColumn<String,String> surnameGangster = new TableColumn<String,String>("Фамилия");
+                    TableColumn<Gangster,String> surnameGangster = new TableColumn<>("Фамилия");
                     surnameGangster.setPrefWidth(155);
-                    TableColumn<String,String> nameGangster = new TableColumn<String,String>("Имя");
+                    TableColumn<Gangster,String> nameGangster = new TableColumn<>("Имя");
                     nameGangster.setPrefWidth(155);
-                    TableColumn<String,String> crime = new TableColumn<String,String>("Преступление");
+                    TableColumn<Gangster,String> crime = new TableColumn<>("Преступление");
                     crime.setPrefWidth(155);
-                    TableColumn<String,String> statusGangster = new TableColumn<String,String>("Статус");
+                    TableColumn<Gangster,String> statusGangster = new TableColumn<>("Статус");
                     statusGangster.setPrefWidth(155);
+                    TableColumn<Gangster,Void> deleteGangster = new TableColumn<>("Удалить");
+
+
+                    numberOfGangster.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
+                    passportGangster.setCellValueFactory(new PropertyValueFactory<>("passport"));
+                    surnameGangster.setCellValueFactory(new PropertyValueFactory<>("surname"));
+                    nameGangster.setCellValueFactory(new PropertyValueFactory<>("name"));
+                    crime.setCellValueFactory(new PropertyValueFactory<>("crime"));
+                    statusGangster.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+                    numberOfGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                    passportGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                    surnameGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                    nameGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                    crime.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                    statusGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
 
                     gangstersTable.getColumns().addAll(numberOfGangster,passportGangster,surnameGangster,
-                            nameGangster,crime,statusGangster);
+                            nameGangster,crime,statusGangster,deleteGangster);
+
                     // кнопка "Список сотрудников"
                     Button employeesButtonList1 = new Button("Сотрудники");
                     employeesButtonList1.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
@@ -1260,7 +1274,7 @@ public class MyApp extends Application {
                     exitButtonList1.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
-                            stage.close();
+                            stage.setScene(welcomeScene);
                         }
                     });
 
@@ -1290,6 +1304,35 @@ public class MyApp extends Application {
                     addGangster.setTextAlignment(TextAlignment.CENTER);
                     addGangster.setStyle("-fx-background-color: #182E3E; ");
                     addGangster.setPrefSize(315, 50);
+
+                    Button searchFullGangsters = new Button("Все преступники");
+                    searchFullGangsters.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                    searchFullGangsters.setTextFill(Color.WHITE);
+                    searchFullGangsters.setTextAlignment(TextAlignment.CENTER);
+                    searchFullGangsters.setStyle("-fx-background-color: #182E3E; ");
+                    searchFullGangsters.setPrefSize(305, 50);
+
+                    searchFullGangsters.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent mouseEvent) {
+                            searchFullGangsters.setStyle("-fx-background-color: #085b96");
+                        }
+                    });
+                    searchFullGangsters.setOnMouseExited(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent mouseEvent) {
+                            searchFullGangsters.setStyle("-fx-background-color: #182E3E;");
+                        }
+                    });
+
+                    searchFullGangsters.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+
+                            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+
+                        }
+                    });
 
                     addGangster.setOnMouseEntered(new EventHandler<MouseEvent>() {
                         @Override
@@ -1421,7 +1464,7 @@ public class MyApp extends Application {
 
                             addGangsterGrid.add(addButton,1,6);
 
-                            Scene addGangsterScene = new Scene(addGangsterGrid,width,height);
+                            Scene addGangsterScene = new Scene(addGangsterGrid);
 
                             Stage addGangsterStage = new Stage();
 
@@ -1484,7 +1527,7 @@ public class MyApp extends Application {
                     });
 
                     HBox editButtons1 = new HBox();
-                    editButtons1.getChildren().addAll(addGangster);
+                    editButtons1.getChildren().addAll(addGangster, searchFullGangsters);
                     editButtons1.setSpacing(10);
                     editButtons1.setPadding(new Insets(10));
                     editButtons1.setAlignment(Pos.CENTER);
