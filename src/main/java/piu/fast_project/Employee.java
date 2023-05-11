@@ -1,25 +1,28 @@
 package piu.fast_project;
 
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+@Entity
 public class Employee {
     String name;
     String surname;
     String rank;
     String phone;
     String passport;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     String serviceNumber;
     String salary;
     String mail;
 
-    public Employee(String name, String surname, String rank, String phone, String passport,
-                    String serviceNumber, String salary, String mail) {
-        this.name = name;
-        this.surname = surname;
-        this.rank = rank;
-        this.phone = phone;
-        this.passport = passport;
-        this.serviceNumber = serviceNumber;
-        this.salary = salary;
-        this.mail = mail;
+   /* @OneToMany(mappedBy = "employee")
+    private List<Case> cases;
+*/
+    public Employee() {
+
     }
 
     public String getName() {
@@ -86,5 +89,22 @@ public class Employee {
         this.mail = mail;
     }
 
+    /*public List<Case> getCases() {
+        return cases;
+    }
 
+    public void setCases(List<Case> cases) {
+        this.cases = cases;
+    }*/
+
+    public Employee(String name, String surname, String rank, String phone, String passport, String serviceNumber, String salary, String mail) {
+        this.name = name;
+        this.surname = surname;
+        this.rank = rank;
+        this.phone = phone;
+        this.passport = passport;
+        this.serviceNumber = serviceNumber;
+        this.salary = salary;
+        this.mail = mail;
+    }
 }

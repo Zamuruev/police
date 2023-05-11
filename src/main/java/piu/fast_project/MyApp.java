@@ -15,7 +15,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -23,7 +26,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.hibernate.SessionFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -823,6 +825,7 @@ public class MyApp extends Application {
                     searchFullEmployees.setStyle("-fx-background-color: #182E3E; ");
                     searchFullEmployees.setPrefSize(305, 50);
 
+                    ObservableList<Employee> observableList = FXCollections.observableArrayList();
                     searchFullEmployees.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -833,11 +836,13 @@ public class MyApp extends Application {
                                 PreparedStatement pst = connection.prepareStatement(query);
                                 ResultSet resultSet = pst.executeQuery();
 
-                                ObservableList<Employee> observableList = FXCollections.observableArrayList();
+                                observableList.clear();
+                                employeesTable.getItems().clear();
                                 while(resultSet.next()) {
                                     Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
                                     observableList.add(emp);
                                     employeesTable.setItems(observableList);
+                                    emp = null;
                                 }
 
                             } catch (SQLException e) {
@@ -1037,6 +1042,10 @@ public class MyApp extends Application {
                                         preparedStatement1.setString(2,rankField.getText());
                                         preparedStatement1.setString(3,salaryField.getText());
                                         preparedStatement1.executeUpdate();
+                                        //connection.close();
+                                        preparedStatement.close();
+                                        preparedStatement1.close();
+
 
                                     } catch (SQLException e) {
                                         throw new RuntimeException(e);
@@ -1100,6 +1109,212 @@ public class MyApp extends Application {
                     searchButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
+                            String query = null;
+                            int c = 0;
+                            if(surnameField.getText().isEmpty()) {
+                                if(nameField.getText().isEmpty()) {
+                                    if(rankField.getText().isEmpty()) {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport";
+                                        c = 0;
+                                    }
+                                    else {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport AND employee.ranks = ?";
+                                        c = 1;
+                                    }
+                                }
+                                else {
+                                    if(rankField.getText().isEmpty()) {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport AND person.name = ?";
+                                        c = 2;
+                                }
+                                    else {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport AND (person.name = ? AND employee.ranks = ?)";
+                                        c = 3;
+                                    }
+                                }
+                            }
+                            else {
+                                if(nameField.getText().isEmpty()) {
+                                    if(rankField.getText().isEmpty()) {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport AND person.surname = ?";
+                                        c = 4;
+                                    }
+                                    else {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport AND (person.surname = ? AND employee.ranks = ?)";
+                                        c = 5;
+                                    }
+                                }
+                                else {
+                                    if(rankField.getText().isEmpty())
+                                    {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport AND (person.surname = ? AND person.name = ?)";
+                                    c = 6;
+                                    }
+                                   else {
+                                        query = "SELECT * FROM employee, person WHERE employee.id_passport = person.id_passport AND (person.surname = ? AND person.name = ? AND employee.ranks = ?)";
+                                        c = 7;
+                                    }
+                                }
+                            }
+                            Connection connection1 = MySQLConnection.getInstance().getConnection();
+                            try {
+                                if(c == 7) {
+                                    PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                preparedStatement3.setString(1,surnameField.getText());
+                                preparedStatement3.setString(2,nameField.getText());
+                                preparedStatement3.setString(3,rankField.getText());
+                                
+                                ResultSet resultSet = preparedStatement3.executeQuery();
+                                surnameField.clear();
+                                nameField.clear();
+                                rankField.clear();
+                                observableList.clear();
+                                employeesTable.getItems().clear();
+                                while(resultSet.next()) {
+                                    Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                    observableList.add(emp);
+                                    employeesTable.setItems(observableList);
+                                    emp = null;
+                                }
+                                }
+                                else {
+                                    if(c == 6) {
+                                        PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                        preparedStatement3.setString(1,surnameField.getText());
+                                        preparedStatement3.setString(2,nameField.getText());
+
+                                        ResultSet resultSet = preparedStatement3.executeQuery();
+                                        surnameField.clear();
+                                        nameField.clear();
+                                        rankField.clear();
+                                        observableList.clear();
+                                        employeesTable.getItems().clear();
+                                        while(resultSet.next()) {
+                                            Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                            observableList.add(emp);
+                                            employeesTable.setItems(observableList);
+                                            emp = null;
+                                        }
+                                    }
+                                    else { if(c == 5) {
+                                        PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                        preparedStatement3.setString(1,surnameField.getText());
+                                        preparedStatement3.setString(2,rankField.getText());
+
+                                        ResultSet resultSet = preparedStatement3.executeQuery();
+                                        surnameField.clear();
+                                        nameField.clear();
+                                        rankField.clear();
+                                        observableList.clear();
+                                        employeesTable.getItems().clear();
+                                        while(resultSet.next()) {
+                                            Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                            observableList.add(emp);
+                                            employeesTable.setItems(observableList);
+                                            emp = null;
+                                        }
+                                    }
+                                    else {
+                                        if(c == 4) {
+                                            PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                            preparedStatement3.setString(1,surnameField.getText());
+
+                                            ResultSet resultSet = preparedStatement3.executeQuery();
+                                            surnameField.clear();
+                                            nameField.clear();
+                                            rankField.clear();
+                                            observableList.clear();
+                                            employeesTable.getItems().clear();
+                                            while(resultSet.next()) {
+                                                Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                                observableList.add(emp);
+                                                employeesTable.setItems(observableList);
+                                                emp = null;
+                                            }
+                                        }
+                                        else {
+                                            if(c == 3) {
+                                                PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                                preparedStatement3.setString(1,nameField.getText());
+                                                preparedStatement3.setString(2,rankField.getText());
+
+                                                ResultSet resultSet = preparedStatement3.executeQuery();
+                                                surnameField.clear();
+                                                nameField.clear();
+                                                rankField.clear();
+                                                observableList.clear();
+                                                employeesTable.getItems().clear();
+                                                while(resultSet.next()) {
+                                                    Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                                    observableList.add(emp);
+                                                    employeesTable.setItems(observableList);
+                                                    emp = null;
+                                                }
+                                            }
+                                            else {
+                                                if(c == 2) {
+                                                    PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                                    preparedStatement3.setString(1,nameField.getText());
+
+                                                    ResultSet resultSet = preparedStatement3.executeQuery();
+                                                    surnameField.clear();
+                                                    nameField.clear();
+                                                    rankField.clear();
+                                                    observableList.clear();
+                                                    employeesTable.getItems().clear();
+                                                    while(resultSet.next()) {
+                                                        Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                                        observableList.add(emp);
+                                                        employeesTable.setItems(observableList);
+                                                        emp = null;
+                                                    }
+                                                }
+                                                else {
+                                                    if(c == 1) {
+                                                        PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                                        preparedStatement3.setString(1,rankField.getText());
+
+                                                        ResultSet resultSet = preparedStatement3.executeQuery();
+                                                        surnameField.clear();
+                                                        nameField.clear();
+                                                        rankField.clear();
+                                                        observableList.clear();
+                                                        employeesTable.getItems().clear();
+                                                        while(resultSet.next()) {
+                                                            Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                                            observableList.add(emp);
+                                                            employeesTable.setItems(observableList);
+                                                            emp = null;
+                                                        }
+                                                    }
+                                                    else {
+                                                        PreparedStatement preparedStatement3 = connection1.prepareStatement(query);
+                                                        ResultSet resultSet = preparedStatement3.executeQuery();
+                                                        surnameField.clear();
+                                                        nameField.clear();
+                                                        rankField.clear();
+                                                        observableList.clear();
+                                                        employeesTable.getItems().clear();
+                                                        while(resultSet.next()) {
+                                                            Employee emp = new Employee(resultSet.getString("name"),resultSet.getString("surname"),resultSet.getString("ranks"),"",resultSet.getString("id_passport"),resultSet.getString("service_number"),resultSet.getString("salary"),"000");
+                                                            observableList.add(emp);
+                                                            employeesTable.setItems(observableList);
+                                                            emp = null;
+                                                        }
+
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    }
+                                }
+
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+
 
                         }
                     });
@@ -1329,8 +1544,6 @@ public class MyApp extends Application {
                         @Override
                         public void handle(ActionEvent actionEvent) {
 
-                            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-
                         }
                     });
 
@@ -1464,6 +1677,7 @@ public class MyApp extends Application {
 
                             addGangsterGrid.add(addButton,1,6);
 
+
                             Scene addGangsterScene = new Scene(addGangsterGrid);
 
                             Stage addGangsterStage = new Stage();
@@ -1471,7 +1685,23 @@ public class MyApp extends Application {
                             addButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
+                                    /*SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                                    Session session = sessionFactory.getCurrentSession();
+                                    session.beginTransaction();
+                                    if(!passportField.getText().isEmpty()) {
+                                        Person person = new Person(Long.parseLong(passportField.getText()),nameField.getText(),surnameField.getText(),"11.04.2005");
+                                        if(!serialNumberField.getText().isEmpty())
+                                        {Gangster gangster = new Gangster(Long.parseLong(serialNumberField.getText()),person);
+                                            Case case1 = new Case(gangster,statusField.getText(),crimeField.getText(),dateCrimeField.getText());
+                                            session.save(person);
+                                            session.save(gangster);
+                                            session.save(case1);
+                                        }
+                                    }
+                                    session.getTransaction().commit();
+                                    sessionFactory.close();*/
                                     addGangsterStage.close();
+
                                 }
                             });
                             addGangsterStage.setResizable(false);
@@ -1479,6 +1709,8 @@ public class MyApp extends Application {
                             addGangsterStage.getIcons().add(new Image("file:C:/Users/zamur/Desktop/fast_project/src/main/resources/img/logo.png"));
                             addGangsterStage.setScene(addGangsterScene);
                             addGangsterStage.show();
+
+
                         }
                     });
 

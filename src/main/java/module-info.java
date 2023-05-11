@@ -4,6 +4,7 @@ module piu.fast_project {
     requires java.sql;
     requires java.persistence;
     requires org.hibernate.orm.core;
+    requires java.naming;
 
 
     opens piu.fast_project to javafx.fxml;
