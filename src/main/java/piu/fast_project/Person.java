@@ -18,8 +18,8 @@ public class Person {
     @Column(name = "birthday")
     private String birthday;
 
-   /* @OneToOne(mappedBy = "person")
-    private Gangster gangster;*/
+   @OneToOne(mappedBy = "person")
+    private Gangster gangster;
 
     public Person(Long id_passport, String name, String surname, String birthday) {
         this.id_passport = id_passport;
@@ -64,12 +64,12 @@ public class Person {
         this.birthday = birthday;
     }
 
-//    public Gangster getGangster() {
-//        return gangster;
-//    }
-//
-//    public void setGangster(Gangster gangster) {
-//        this.gangster = gangster;
-//    }
+    /*public Gangster getGangster() {
+        return gangster;
+    }
+
+    public void setGangster(Gangster gangster) {
+        this.gangster = gangster;
+    }*/
 
 }

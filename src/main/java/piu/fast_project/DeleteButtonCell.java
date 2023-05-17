@@ -32,6 +32,7 @@ public class DeleteButtonCell extends TableCell<Employee, Void> {
             String queryPerson = "DELETE FROM person WHERE id_passport = ?";
             String queryAuthorization = "DELETE FROM authorization WHERE id_passport = ?";
             String queryImageProfile = "DELETE FROM imageprofile WHERE id_passport = ?";
+            String queryContactProfile = "DELETE FROM contact WHERE id_contact = ?";
             Connection connection = MySQLConnection.getInstance().getConnection();
             try {
                 PreparedStatement pstE = connection.prepareStatement(queryEmployee);
@@ -45,6 +46,10 @@ public class DeleteButtonCell extends TableCell<Employee, Void> {
                 PreparedStatement pstI = connection.prepareStatement(queryImageProfile);
                 pstI.setString(1,employee.passport);
                 pstI.executeUpdate();
+
+                PreparedStatement pstC = connection.prepareStatement(queryContactProfile);
+                pstC.setString(1,employee.id_contact);
+                pstC.executeUpdate();
 
                 PreparedStatement pstP = connection.prepareStatement(queryPerson);
                 pstP.setString(1,employee.passport);

@@ -17,6 +17,7 @@ public class Employee {
     String serviceNumber;
     String salary;
     String mail;
+    String id_contact;
 
    /* @OneToMany(mappedBy = "employee")
     private List<Case> cases;
@@ -89,15 +90,15 @@ public class Employee {
         this.mail = mail;
     }
 
-    /*public List<Case> getCases() {
-        return cases;
+    public String getId_contact() {
+        return id_contact;
     }
 
-    public void setCases(List<Case> cases) {
-        this.cases = cases;
-    }*/
+    public void setId_contact(String id_contact) {
+        this.id_contact = id_contact;
+    }
 
-    public Employee(String name, String surname, String rank, String phone, String passport, String serviceNumber, String salary, String mail) {
+    public Employee(String name, String surname, String rank, String phone, String passport, String serviceNumber, String salary, String mail, String id_contact) {
         this.name = name;
         this.surname = surname;
         this.rank = rank;
@@ -106,5 +107,6 @@ public class Employee {
         this.serviceNumber = serviceNumber;
         this.salary = salary;
         this.mail = mail;
+        this.id_contact = id_contact;
     }
 }
