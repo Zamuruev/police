@@ -124,9 +124,9 @@ public class MyApp extends Application {
                     preparedStatement23.setString(1,loginField.getText());
                     preparedStatement23.setString(2,passwordField.getText());
                     ResultSet resultSet23 = preparedStatement23.executeQuery();
-                    if(resultSet23.next()) {
-
-                        {
+                    if(resultSet23.next())
+                    {
+                        if(resultSet23.getString("login").equals("admin") && resultSet23.getString("password").equals("admin")) {
                             String login1 = loginField.getText();
                             loginField.clear();
                             String password1 = passwordField.getText();
@@ -501,7 +501,7 @@ public class MyApp extends Application {
                             profileGrid.setHalignment(mailText, HPos.CENTER);
                             profileGrid.setValignment(mailText, VPos.CENTER);
 
-                            String query = "SELECT *FROM person INNER JOIN employee ON person.id_passport = employee.id_passport WHERE person.id_passport = ?";
+                            String query = "SELECT *FROM person, employee,contact WHERE person.id_passport = employee.id_passport AND person.id_passport = ? AND employee.id_contact = contact.id_contact";
                             Connection connection = MySQLConnection.getInstance().getConnection();
                             try {
                                 PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -513,6 +513,8 @@ public class MyApp extends Application {
                                     passportText.setText(id_passport1);
                                     rankText.setText(resultSet.getString("ranks"));
                                     salaryText.setText(resultSet.getString("salary"));
+                                    phoneText.setText(resultSet.getString("phone"));
+                                    mailText.setText(resultSet.getString("mail"));
                                 }
                             } catch (SQLException e) {
                                 throw new RuntimeException(e);
@@ -578,19 +580,19 @@ public class MyApp extends Application {
                                     phoneField.setMinSize(50,5);
                                     phoneText.setText(phoneField.getText());
 
-                /*String rank = rankText.getText();
-                profileGrid.getChildren().remove(rankText);
-                TextField rankField = new TextField(rank);
-                rankField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                rankField.setStyle("-fx-text-fill: #182E3E");
-                rankField.setMinSize(260,45);
+                                    String rank = rankText.getText();
+                                    profileGrid.getChildren().remove(rankText);
+                                    TextField rankField = new TextField(rank);
+                                    rankField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                                    rankField.setStyle("-fx-text-fill: #182E3E");
+                                    rankField.setMinSize(260,45);
 
-                String salary = salaryText.getText();
-                profileGrid.getChildren().remove(salaryText);
-                TextField salaryField = new TextField(salary);
-                salaryField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                salaryField.setStyle("-fx-text-fill: #182E3E");
-                salaryField.setMinSize(260,45);*/
+                                    String salary = salaryText.getText();
+                                    profileGrid.getChildren().remove(salaryText);
+                                    TextField salaryField = new TextField(salary);
+                                    salaryField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                                    salaryField.setStyle("-fx-text-fill: #182E3E");
+                                    salaryField.setMinSize(260,45);
 
                                     profileGrid.getChildren().remove(mailText);
                                     mailField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
@@ -679,7 +681,8 @@ public class MyApp extends Application {
                             deleteEmployee.setCellFactory(cell -> new DeleteButtonCell());
                             deleteEmployee.setPrefWidth(88);
                             TableColumn<Employee,Void> profileEmployee = new TableColumn<>("Профиль");
-                            profileEmployee.setCellFactory(cell -> new fullEmployeeProfile(profile,stage));
+
+                            //profileEmployee.setCellFactory(cell -> new fullEmployeeProfile(stage,employeesScene));
                             profileEmployee.setPrefWidth(98);
 
                             serviceNumberEmployee.setCellValueFactory(new PropertyValueFactory<>("serviceNumber"));
@@ -1392,7 +1395,7 @@ public class MyApp extends Application {
                             employeesPane.setTop(vb);
 
                             Scene employeesScene = new Scene(employeesPane,width,height);
-
+                            profileEmployee.setCellFactory(cell -> new fullEmployeeProfile(stage,employeesScene));
                             employeesButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -1738,23 +1741,22 @@ public class MyApp extends Application {
                                     addButton.setOnAction(new EventHandler<ActionEvent>() {
                                         @Override
                                         public void handle(ActionEvent actionEvent) {
-                                            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                                           /* SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
                                             Session session = sessionFactory.getCurrentSession();
                                             session.beginTransaction();
                                             if(!passportField.getText().isEmpty()) {
                                                 Person person = new Person(Long.parseLong(passportField.getText()),nameField.getText(),surnameField.getText(),"11.04.2005");
                                                 if(!serialNumberField.getText().isEmpty())
-                                                {Gangster gangster = new Gangster(Long.parseLong(serialNumberField.getText()),person);
-                                                    //Case case1 = new Case(gangster,statusField.getText(),crimeField.getText(),dateCrimeField.getText());
+                                                {
+                                                    Gangster gangster = new Gangster(Long.parseLong(serialNumberField.getText()),person);
+
                                                     session.save(person);
                                                     session.save(gangster);
-                                                    //session.save(case1);
                                                 }
                                             }
                                             session.getTransaction().commit();
-                                            sessionFactory.close();
                                             addGangsterStage.close();
-
+*/
                                         }
                                     });
                                     addGangsterStage.setResizable(false);
@@ -2093,6 +2095,7 @@ public class MyApp extends Application {
                             stage.setScene(profile);
                         }
                     }
+
                     else {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle("Ошибка");

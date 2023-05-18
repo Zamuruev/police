@@ -18,9 +18,6 @@ public class Person {
     @Column(name = "birthday")
     private String birthday;
 
-   @OneToOne(mappedBy = "person")
-    private Gangster gangster;
-
     public Person(Long id_passport, String name, String surname, String birthday) {
         this.id_passport = id_passport;
         this.name = name;
@@ -63,13 +60,5 @@ public class Person {
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
-
-    /*public Gangster getGangster() {
-        return gangster;
-    }
-
-    public void setGangster(Gangster gangster) {
-        this.gangster = gangster;
-    }*/
 
 }
