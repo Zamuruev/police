@@ -997,7 +997,6 @@ public class MyApp extends Application {
                                     addButton.setTextFill(Color.WHITE);
                                     addButton.setPrefSize(305, 50);
                                     addButton.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-
                                     addButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
                                         @Override
                                         public void handle(MouseEvent mouseEvent) {
@@ -1093,8 +1092,20 @@ public class MyApp extends Application {
                                                     preparedStatement1.setString(3,salaryField.getText());
                                                     preparedStatement1.setString(4,str);
                                                     preparedStatement1.executeUpdate();
+                                                    String query88 = "SELECT *FROM employee, person, contact WHERE employee.id_passport = person.id_passport AND employee.id_contact = contact.id_contact";
+                                                    Connection connection88 = MySQLConnection.getInstance().getConnection();
 
-                                                    preparedStatement1.close();
+                                                        PreparedStatement pst89 = connection88.prepareStatement(query88);
+                                                        ResultSet resultSet88 = pst89.executeQuery();
+                                                    observableList.clear();
+                                                    employeesTable.getItems().clear();
+                                                        while(resultSet88.next()) {
+                                                            Employee emp = new Employee(resultSet88.getString("name"),resultSet88.getString("surname"),resultSet88.getString("ranks"),resultSet88.getString("phone"),resultSet88.getString("id_passport"),resultSet88.getString("service_number"),resultSet88.getString("salary"),resultSet88.getString("mail"),resultSet88.getString("id_contact"));
+                                                            observableList.add(emp);
+                                                            employeesTable.setItems(observableList);
+                                                            emp = null;
+                                                        }
+                                                        preparedStatement1.close();
                                                 }
 
                                                 //connection.close();
@@ -1400,7 +1411,6 @@ public class MyApp extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     stage.setScene(employeesScene);
-                                    //employeesButton.setOnM
                                     stage.show();
                                 }
                             });
@@ -1581,7 +1591,7 @@ public class MyApp extends Application {
                             searchFullGangsters.setTextFill(Color.WHITE);
                             searchFullGangsters.setTextAlignment(TextAlignment.CENTER);
                             searchFullGangsters.setStyle("-fx-background-color: #182E3E; ");
-                            searchFullGangsters.setPrefSize(305, 50);
+                            searchFullGangsters.setPrefSize(315, 50);
 
                             searchFullGangsters.setOnMouseEntered(new EventHandler<MouseEvent>() {
                                 @Override
@@ -2093,6 +2103,10 @@ public class MyApp extends Application {
                             });
 
                             stage.setScene(profile);
+                        }
+                        else {
+                            loginField.clear();
+                            passwordField.clear();
                         }
                     }
 
