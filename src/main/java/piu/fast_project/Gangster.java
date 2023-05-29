@@ -1,34 +1,33 @@
 package piu.fast_project;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 
 @Entity
 @Table(name = "gangster")
 public class Gangster {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "number_of_gangster")
-    private Long number_of_gangster;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int numberOfGangster;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_passport")
-    private Person person;
+    public Person person;
 
-    public Gangster(Long number_of_gangster, Person person) {
-        this.number_of_gangster = number_of_gangster;
+    public Gangster() {
+    }
+
+    public Gangster(Person person) {
         this.person = person;
     }
 
-    public Gangster() {
-
+    public int getNumberOfGangster() {
+        return numberOfGangster;
     }
 
-    public Long getNumber_of_gangster() {
-        return number_of_gangster;
-    }
-
-    public void setNumber_of_gangster(Long number_of_gangster) {
-        this.number_of_gangster = number_of_gangster;
+    public void setNumberOfGangster(int numberOfGangster) {
+        this.numberOfGangster = numberOfGangster;
     }
 
     public Person getPerson() {
@@ -38,12 +37,4 @@ public class Gangster {
     public void setPerson(Person person) {
         this.person = person;
     }
-
-    /*public List<Case> getCases() {
-        return cases;
-    }
-
-    public void setCases(List<Case> cases) {
-        this.cases = cases;
-    }*/
 }

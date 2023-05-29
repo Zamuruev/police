@@ -1,19 +1,12 @@
 package piu.fast_project;
 
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-@Entity
 public class Employee {
     String name;
     String surname;
     String rank;
     String phone;
     String passport;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     String serviceNumber;
     String salary;
     String mail;

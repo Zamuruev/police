@@ -31,10 +31,9 @@ import org.hibernate.SessionFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.List;
+import piu.fast_project.CombinedData;
 
 public class MyApp extends Application {
     int width = 1545;
@@ -126,7 +125,8 @@ public class MyApp extends Application {
                     ResultSet resultSet23 = preparedStatement23.executeQuery();
                     if(resultSet23.next())
                     {
-                        if(resultSet23.getString("login").equals("admin") && resultSet23.getString("password").equals("admin")) {
+                        if(resultSet23.getString("login").equals("admin") && resultSet23.getString("password").equals("admin"))
+                        {
                             String login1 = loginField.getText();
                             loginField.clear();
                             String password1 = passwordField.getText();
@@ -229,6 +229,7 @@ public class MyApp extends Application {
                             casesButton.setTextAlignment(TextAlignment.CENTER);
                             casesButton.setStyle("-fx-background-color: #182E3E; ");
                             casesButton.setPrefSize(300, 50);
+                            casesButton.setVisible(false);
 
                             casesButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
                                 @Override
@@ -330,7 +331,7 @@ public class MyApp extends Application {
                                         Image image = new Image(selectedFile.toURI().toString());
                                         String newUrlImage = selectedFile.toURI().toString();
                                         String queryOld = "SELECT *FROM imageprofile WHERE id_passport = ?";
-                                        String query  = "UPDATE imageProfile SET url = ? WHERE url = ? AND id_passport = ?";
+                                        String query  = "UPDATE imageprofile SET url = ? WHERE url = ? AND id_passport = ?";
                                         String queryInsert = "INSERT INTO imageprofile(url,id_passport) VALUES (?,?)";
 
                                         Connection connection = MySQLConnection.getInstance().getConnection();
@@ -551,6 +552,18 @@ public class MyApp extends Application {
                             TextField mailField = new TextField(mail);
                             mailField.setAlignment(Pos.CENTER);
 
+                            String serviceNumberE = serviceNumberText.getText();
+                            TextField serviceNumberField = new TextField(serviceNumberE);
+                            serviceNumberField.setAlignment(Pos.CENTER);
+
+                            String rank1 = rankText.getText();
+                            TextField rankField1 = new TextField(rank1);
+                            rankField1.setAlignment(Pos.CENTER);
+
+                            String salary = salaryText.getText();
+                            TextField salaryField = new TextField(salary);
+                            salaryField.setAlignment(Pos.CENTER);
+
                             editDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
@@ -559,57 +572,88 @@ public class MyApp extends Application {
                                     fullNameField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                                     fullNameField.setStyle("-fx-text-fill: red");
                                     fullNameField.setMinSize(50,5);
-                                    fullNameText.setText(fullNameField.getText());
 
-                /*String serviceNumberEmployee = serviceNumberEmployeeText.getText();
-                profileGrid.getChildren().remove(serviceNumberEmployeeText);
-                TextField serviceNumberEmployeeField = new TextField(serviceNumberEmployee);
-                serviceNumberEmployeeField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                serviceNumberEmployeeField.setStyle("-fx-text-fill: #182E3E");
-                serviceNumberEmployeeField.setMinSize(260,45);*/
+                                    profileGrid.getChildren().remove(serviceNumberText);
+                                    serviceNumberField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                                    serviceNumberField.setStyle("-fx-text-fill: red");
+                                    serviceNumberField.setMinSize(50,5);
 
                                     profileGrid.getChildren().remove(passportText);
                                     passportField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                                     passportField.setStyle("-fx-text-fill: red");
                                     passportField.setMinSize(50,5);
-                                    passportText.setText(passportField.getText());
 
                                     profileGrid.getChildren().remove(phoneText);
                                     phoneField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                                     phoneField.setStyle("-fx-text-fill: red");
                                     phoneField.setMinSize(50,5);
-                                    phoneText.setText(phoneField.getText());
 
-                                    String rank = rankText.getText();
                                     profileGrid.getChildren().remove(rankText);
-                                    TextField rankField = new TextField(rank);
-                                    rankField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                                    rankField.setStyle("-fx-text-fill: #182E3E");
-                                    rankField.setMinSize(260,45);
+                                    rankField1.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                                    rankField1.setStyle("-fx-text-fill: red");
+                                    rankField1.setMinSize(50,5);
 
-                                    String salary = salaryText.getText();
                                     profileGrid.getChildren().remove(salaryText);
-                                    TextField salaryField = new TextField(salary);
                                     salaryField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                                    salaryField.setStyle("-fx-text-fill: #182E3E");
-                                    salaryField.setMinSize(260,45);
+                                    salaryField.setStyle("-fx-text-fill: red");
+                                    salaryField.setMinSize(50,5);
 
                                     profileGrid.getChildren().remove(mailText);
                                     mailField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                                     mailField.setStyle("-fx-text-fill: red");
                                     mailField.setMinSize(50,5);
-                                    mailText.setText(mailField.getText());
 
-                                    profileGrid.setMaxSize(500,20);
+
+                                    //profileGrid.setMaxSize(500,20);
+                                    profileGrid.add(serviceNumberField,1,0);
                                     profileGrid.add(fullNameField,1,1);
                                     profileGrid.add(passportField,1,2);
                                     profileGrid.add(phoneField,1,3);
-                                    //profileGrid.add(rankField,1,4);
-                                    //profileGrid.add(salaryField,1,5);
+                                    profileGrid.add(rankField1,1,4);
+                                    profileGrid.add(salaryField,1,5);
                                     profileGrid.add(mailField,1,6);
 
                                     fullData.getChildren().remove(editDataUserButton);
                                     fullData.getChildren().add(saveDataUserButton);
+
+
+                                }
+                            });
+
+                            saveDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    fullNameText.setText(fullNameField.getText());
+                                    profileGrid.getChildren().remove(fullNameField);
+
+                                    passportText.setText(passportField.getText());
+                                    profileGrid.getChildren().remove(passportField);
+
+                                    phoneText.setText(phoneField.getText());
+                                    profileGrid.getChildren().remove(phoneField);
+
+                                    mailText.setText(mailField.getText());
+                                    profileGrid.getChildren().remove(mailField);
+
+                                    rankText.setText(rankField1.getText());
+                                    profileGrid.getChildren().remove(rankField1);
+
+                                    salaryText.setText(salaryField.getText());
+                                    profileGrid.getChildren().remove(salaryField);
+
+                                    serviceNumberText.setText(serviceNumberField.getText());
+                                    profileGrid.getChildren().remove(serviceNumberField);
+
+                                    profileGrid.add(serviceNumberText,1,0);
+                                    profileGrid.add(fullNameText,1,1);
+                                    profileGrid.add(passportText,1,2);
+                                    profileGrid.add(phoneText,1,3);
+                                    profileGrid.add(rankText,1,4);
+                                    profileGrid.add(salaryText,1,5);
+                                    profileGrid.add(mailText,1,6);
+                                    fullData.getChildren().remove(saveDataUserButton);
+                                    fullData.getChildren().add(editDataUserButton);
+                                    //profileGrid.setMaxSize(600,20);
                                 }
                             });
 
@@ -634,22 +678,7 @@ public class MyApp extends Application {
                             profileGrid.add(rankText,1,4);
                             profileGrid.add(salaryText,1,5);
                             profileGrid.add(mailText,1,6);
-                            saveDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    profileGrid.getChildren().remove(fullNameField);
-                                    profileGrid.getChildren().remove(passportField);
-                                    profileGrid.getChildren().remove(phoneField);
-                                    profileGrid.getChildren().remove(mailField);
-                                    profileGrid.add(fullNameText,1,1);
-                                    profileGrid.add(passportText,1,2);
-                                    profileGrid.add(phoneText,1,3);
-                                    profileGrid.add(mailText,1,6);
-                                    fullData.getChildren().remove(saveDataUserButton);
-                                    fullData.getChildren().add(editDataUserButton);
-                                    //profileGrid.setMaxSize(600,20);
-                                }
-                            });
+
 
                             Scene profile = new Scene(profilePane,width,height);
                             profileButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -813,6 +842,7 @@ public class MyApp extends Application {
                             casesButtonList.setTextAlignment(TextAlignment.CENTER);
                             casesButtonList.setStyle("-fx-background-color: #182E3E; ");
                             casesButtonList.setPrefSize(300, 50);
+                            casesButtonList.setVisible(false);
 
                             casesButtonList.setOnMouseEntered(new EventHandler<MouseEvent>() {
                                 @Override
@@ -906,7 +936,7 @@ public class MyApp extends Application {
 
                                     TextField passwordField = new TextField();
                                     passwordField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                                    passwordField.setPromptText("Логин");
+                                    passwordField.setPromptText("Пароль");
                                     passwordField.setStyle("-fx-text-fill: #182E3E");
                                     passwordField.setPrefSize(305,50);
 
@@ -1421,38 +1451,40 @@ public class MyApp extends Application {
                                 }
                             });
 
-                            TableView<Gangster> gangstersTable = new TableView();
-                            TableColumn<Gangster,String> numberOfGangster = new TableColumn<>("Серийный номер");
-                            numberOfGangster.setPrefWidth(155);
-                            TableColumn<Gangster,String> passportGangster = new TableColumn<>("Паспорт");
-                            passportGangster.setPrefWidth(155);
-                            TableColumn<Gangster,String> surnameGangster = new TableColumn<>("Фамилия");
-                            surnameGangster.setPrefWidth(155);
-                            TableColumn<Gangster,String> nameGangster = new TableColumn<>("Имя");
-                            nameGangster.setPrefWidth(155);
-                            TableColumn<Gangster,String> crime = new TableColumn<>("Преступление");
-                            crime.setPrefWidth(155);
-                            TableColumn<Gangster,String> statusGangster = new TableColumn<>("Статус");
-                            statusGangster.setPrefWidth(155);
-                            TableColumn<Gangster,Void> deleteGangster = new TableColumn<>("Удалить");
+                            // Создание TableView
+                            TableView<Object> gangstersTable = new TableView<>();
 
+// Создание столбцов для полей класса Person
+                            TableColumn<Object, Long> idPassportColumn = new TableColumn<>("Паспорт");
+                            idPassportColumn.setCellValueFactory(new PropertyValueFactory<>("idPassport"));
+                            idPassportColumn.setPrefWidth(155);
 
-                            numberOfGangster.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
-                            passportGangster.setCellValueFactory(new PropertyValueFactory<>("passport"));
-                            surnameGangster.setCellValueFactory(new PropertyValueFactory<>("surname"));
-                            nameGangster.setCellValueFactory(new PropertyValueFactory<>("name"));
-                            crime.setCellValueFactory(new PropertyValueFactory<>("crime"));
-                            statusGangster.setCellValueFactory(new PropertyValueFactory<>("status"));
+                            TableColumn<Object, String> surnameColumn = new TableColumn<>("Фамилия");
+                            surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
+                            surnameColumn.setPrefWidth(155);
 
-                            numberOfGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
-                            passportGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
-                            surnameGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
-                            nameGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
-                            crime.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
-                            statusGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                            TableColumn<Object, String> nameColumn = new TableColumn<>("Имя");
+                            nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+                            nameColumn.setPrefWidth(155);
 
-                            gangstersTable.getColumns().addAll(numberOfGangster,passportGangster,surnameGangster,
-                                    nameGangster,crime,statusGangster,deleteGangster);
+                            TableColumn<Object, Date> birthdayColumn = new TableColumn<>("День рождения");
+                            birthdayColumn.setCellValueFactory(new PropertyValueFactory<>("birthday"));
+                            birthdayColumn.setPrefWidth(155);
+
+// Создание столбцов для полей класса Gangster
+                            TableColumn<Object, Integer> numberOfGangsterColumn = new TableColumn<>("Серийный номер");
+                            numberOfGangsterColumn.setCellValueFactory(new PropertyValueFactory<>("numberOfGangster"));
+                            numberOfGangsterColumn.setPrefWidth(155);
+
+// Добавление столбцов в TableView
+                            gangstersTable.getColumns().addAll(numberOfGangsterColumn, idPassportColumn, surnameColumn, nameColumn, birthdayColumn);
+
+                            idPassportColumn.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                            surnameColumn.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                            nameColumn.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                            birthdayColumn.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                            numberOfGangsterColumn.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+
 
                             // кнопка "Список сотрудников"
                             Button employeesButtonList1 = new Button("Сотрудники");
@@ -1565,6 +1597,8 @@ public class MyApp extends Application {
                             casesButtonList1.setTextAlignment(TextAlignment.CENTER);
                             casesButtonList1.setStyle("-fx-background-color: #182E3E; ");
                             casesButtonList1.setPrefSize(300, 50);
+                            casesButtonList1.setVisible(false);
+
                             casesButtonList1.setOnMouseEntered(new EventHandler<MouseEvent>() {
                                 @Override
                                 public void handle(MouseEvent mouseEvent) {
@@ -1609,7 +1643,34 @@ public class MyApp extends Application {
                             searchFullGangsters.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
+                                    gangstersTable.getItems().clear();
+// Получение данных из таблицы Person и Gangster с использованием Hibernate
+                                    List<Person> personList = HibernateUtil.getSessionFactory().openSession()
+                                            .createQuery("FROM Person", Person.class)
+                                            .list();
 
+                                    List<Gangster> gangsterList = HibernateUtil.getSessionFactory().openSession()
+                                            .createQuery("FROM Gangster", Gangster.class)
+                                            .list();
+
+// Создание ObservableList для объединенных данных
+
+                                    ObservableList<Object> combined = FXCollections.observableArrayList();
+// Объединение данных по полю idPassport
+                                    for (Person person : personList) {
+                                        for (Gangster gangster : gangsterList) {
+                                            if (person.getIdPassport() == gangster.getPerson().getIdPassport()) {
+                                                CombinedData combinedData = new CombinedData(person.getIdPassport(),person.getSurname(),person.getName(),java.sql.Date.valueOf("2001-01-01"),gangster.getNumberOfGangster());
+                                                combined.add(combinedData);
+                                                combinedData = null;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    gangstersTable.getItems().addAll(combined);
+                                    personList.clear();
+                                    gangsterList.clear();
+                                    combined.clear();
                                 }
                             });
 
@@ -1630,11 +1691,11 @@ public class MyApp extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
 
-                                    TextField serialNumberField = new TextField();
+                                    /*TextField serialNumberField = new TextField();
                                     serialNumberField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                                     serialNumberField.setPromptText("Серийный номер");
                                     serialNumberField.setStyle("-fx-text-fill: #182E3E");
-                                    serialNumberField.setPrefSize(305,50);
+                                    serialNumberField.setPrefSize(305,50);*/
 
                                     TextField passportField = new TextField();
                                     passportField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
@@ -1654,7 +1715,7 @@ public class MyApp extends Application {
                                     nameField.setStyle("-fx-text-fill: #182E3E");
                                     nameField.setPrefSize(305,50);
 
-                                    TextField crimeField = new TextField();
+                                    /*TextField crimeField = new TextField();
                                     crimeField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                                     crimeField.setPromptText("Преступление");
                                     crimeField.setStyle("-fx-text-fill: #182E3E");
@@ -1670,7 +1731,7 @@ public class MyApp extends Application {
                                     dateCrimeField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
                                     dateCrimeField.setPromptText("Дата преступления");
                                     dateCrimeField.setStyle("-fx-text-fill: #182E3E");
-                                    dateCrimeField.setPrefSize(305,50);
+                                    dateCrimeField.setPrefSize(305,50);*/
 
                                     Label addSurnameLabel = new Label("Фамилия");
                                     addSurnameLabel.setStyle("-fx-text-fill: linear-gradient(to bottom, slategray, white);");
@@ -1681,20 +1742,20 @@ public class MyApp extends Application {
                                     addNameLabel.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
 
                                     Label addPassportLabel = new Label("Паспорт");
-                                    addPassportLabel.setStyle("-fx-text-fill: #182E3E;");
+                                    addPassportLabel.setStyle("-fx-text-fill: linear-gradient(to bottom, slategray, white);");
                                     addPassportLabel.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
 
-                                    Label dateCrimeLabel = new Label("Дата преступления");
+                                    /*Label dateCrimeLabel = new Label("Дата преступления");
                                     dateCrimeLabel.setStyle("-fx-text-fill: #182E3E;");
                                     dateCrimeLabel.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
 
                                     Label crimeLabel = new Label("Преступление");
                                     crimeLabel.setStyle("-fx-text-fill: #182E3E;");
-                                    crimeLabel.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                                    crimeLabel.setFont(Font.font("Helvetica", FontWeight.BOLD,25));*/
 
-                                    Label serialNumberLabel = new Label("Серийный номер");
+                                    /*Label serialNumberLabel = new Label("Серийный номер");
                                     serialNumberLabel.setStyle("-fx-text-fill: linear-gradient(to bottom, slategray, white);");
-                                    serialNumberLabel.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                                    serialNumberLabel.setFont(Font.font("Helvetica", FontWeight.BOLD,25));*/
 
                                     Button addButton = new Button("Добавить");
                                     addButton.setStyle("-fx-background-color: #182E3E;");
@@ -1723,26 +1784,16 @@ public class MyApp extends Application {
                                     addGangsterGrid.setStyle("-fx-background-color: linear-gradient(to bottom, #182E3E, white);");
                                     addGangsterGrid.setPadding(new Insets(10));
 
-                                    addGangsterGrid.add(serialNumberLabel,0,0);
-                                    addGangsterGrid.add(serialNumberField,1, 0);
+                                    addGangsterGrid.add(addSurnameLabel,0,0);
+                                    addGangsterGrid.add(surnameField,1, 0);
 
-                                    addGangsterGrid.add(addSurnameLabel,0,1);
-                                    addGangsterGrid.add(surnameField,1,1);
+                                    addGangsterGrid.add(addNameLabel,0,1);
+                                    addGangsterGrid.add(nameField,1,1);
 
-                                    addGangsterGrid.add(addNameLabel,0,2);
-                                    addGangsterGrid.add(nameField,1,2);
+                                    addGangsterGrid.add(addPassportLabel,0,2);
+                                    addGangsterGrid.add(passportField,1,2);
 
-                                    addGangsterGrid.add(addPassportLabel,0,3);
-                                    addGangsterGrid.add(passportField,1,3);
-
-                                    addGangsterGrid.add(crimeLabel,0,4);
-                                    addGangsterGrid.add(crimeField,1,4);
-
-                                    addGangsterGrid.add(dateCrimeLabel,0,5);
-                                    addGangsterGrid.add(dateCrimeField,1,5);
-
-                                    addGangsterGrid.add(addButton,1,6);
-
+                                    addGangsterGrid.add(addButton,1,3);
 
                                     Scene addGangsterScene = new Scene(addGangsterGrid);
 
@@ -1751,24 +1802,25 @@ public class MyApp extends Application {
                                     addButton.setOnAction(new EventHandler<ActionEvent>() {
                                         @Override
                                         public void handle(ActionEvent actionEvent) {
-                                           /* SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-                                            Session session = sessionFactory.getCurrentSession();
-                                            session.beginTransaction();
-                                            if(!passportField.getText().isEmpty()) {
-                                                Person person = new Person(Long.parseLong(passportField.getText()),nameField.getText(),surnameField.getText(),"11.04.2005");
-                                                if(!serialNumberField.getText().isEmpty())
-                                                {
-                                                    Gangster gangster = new Gangster(Long.parseLong(serialNumberField.getText()),person);
 
-                                                    session.save(person);
-                                                    session.save(gangster);
-                                                }
-                                            }
+                                            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+
+                                            Person person = new Person(Long.parseLong(passportField.getText()), surnameField.getText(), nameField.getText());
+                                            Gangster gangster = new Gangster(person);
+
+                                            Session session = sessionFactory.openSession();
+                                            session.beginTransaction();
+
+                                            session.save(person);
+                                            session.save(gangster);
+
                                             session.getTransaction().commit();
+                                            session.close();
+
+                                            //sessionFactory.close();
                                             addGangsterStage.close();
-*/
-                                        }
-                                    });
+
+                                        } });
                                     addGangsterStage.setResizable(false);
                                     addGangsterStage.setTitle("Полиция");
                                     addGangsterStage.getIcons().add(new Image("file:C:/Users/zamur/Desktop/police/src/main/resources/img/logo.png"));
@@ -1836,7 +1888,7 @@ public class MyApp extends Application {
                             searchBox1.setAlignment(Pos.CENTER);
 
                             VBox vb1 = new VBox();
-                            vb1.getChildren().addAll(menuGangsters, editButtons1,searchBox1);
+                            vb1.getChildren().addAll(menuGangsters, editButtons1/*,searchBox1*/);
 
                             BorderPane gangstersPane = new BorderPane();
                             gangstersPane.setCenter(gangstersTable);
@@ -1983,6 +2035,7 @@ public class MyApp extends Application {
                             casesButtonForCases.setTextAlignment(TextAlignment.CENTER);
                             casesButtonForCases.setStyle("-fx-background-color: #182E3E; ");
                             casesButtonForCases.setPrefSize(300, 50);
+                            casesButtonForCases.setVisible(false);
 
                             casesButtonForCases.setOnMouseEntered(new EventHandler<MouseEvent>() {
                                 @Override
@@ -2056,6 +2109,7 @@ public class MyApp extends Application {
                             TableColumn<Case,String> number_of_case = new TableColumn<>("Номер");
                             TableColumn<Case,String> status_of_case = new TableColumn<>("Cтатус");
                             TableColumn<Case,String> date_of_crime = new TableColumn<>("Дата");
+
                             TableColumn<Case,String> name_of_case = new TableColumn<>("Преступление");
 
                             number_of_case.setCellValueFactory(new PropertyValueFactory<>("number_of_case"));
@@ -2063,11 +2117,11 @@ public class MyApp extends Application {
                             date_of_crime.setCellValueFactory(new PropertyValueFactory<>("date_of_crime"));
                             name_of_case.setCellValueFactory(new PropertyValueFactory<>("name_of_case"));
 
-                            number_of_case.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                           /* number_of_case.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
                             status_of_case.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
                             date_of_crime.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
                             nameGangster.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
-                            name_of_case.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");
+                            name_of_case.setStyle("-fx-font-weight: bold; -fx-text-fill: #182E3E; -fx-font-family: Helvetica; -fx-font-size: 14px; -fx-alignment: center");*/
 
                             number_of_case.setPrefWidth(155);
                             status_of_case.setPrefWidth(155);
@@ -2104,7 +2158,8 @@ public class MyApp extends Application {
 
                             stage.setScene(profile);
                         }
-                        else {
+                        else
+                        {
                             loginField.clear();
                             passwordField.clear();
                         }

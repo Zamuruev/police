@@ -365,6 +365,17 @@ public class fullEmployeeProfile extends TableCell<Employee,Void> {
                 TextField mailField = new TextField(mail);
                 mailField.setAlignment(Pos.CENTER);
 
+                String serviceNumberE = serviceNumberText.getText();
+                TextField serviceNumberField = new TextField(serviceNumberE);
+                serviceNumberField.setAlignment(Pos.CENTER);
+                String rank1 = rankText.getText();
+                TextField rankField1 = new TextField(rank1);
+                rankField1.setAlignment(Pos.CENTER);
+
+                String salary = salaryText.getText();
+                TextField salaryField = new TextField(salary);
+                salaryField.setAlignment(Pos.CENTER);
+
                 editDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
@@ -373,57 +384,88 @@ public class fullEmployeeProfile extends TableCell<Employee,Void> {
                         fullNameField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                         fullNameField.setStyle("-fx-text-fill: red");
                         fullNameField.setMinSize(50,5);
-                        fullNameText.setText(fullNameField.getText());
 
-                /*String serviceNumberEmployee = serviceNumberEmployeeText.getText();
-                profileGrid.getChildren().remove(serviceNumberEmployeeText);
-                TextField serviceNumberEmployeeField = new TextField(serviceNumberEmployee);
-                serviceNumberEmployeeField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                serviceNumberEmployeeField.setStyle("-fx-text-fill: #182E3E");
-                serviceNumberEmployeeField.setMinSize(260,45);*/
+                        profileGrid.getChildren().remove(serviceNumberText);
+                        serviceNumberField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                        serviceNumberField.setStyle("-fx-text-fill: red");
+                        serviceNumberField.setMinSize(50,5);
 
                         profileGrid.getChildren().remove(passportText);
                         passportField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                         passportField.setStyle("-fx-text-fill: red");
                         passportField.setMinSize(50,5);
-                        passportText.setText(passportField.getText());
 
                         profileGrid.getChildren().remove(phoneText);
                         phoneField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                         phoneField.setStyle("-fx-text-fill: red");
                         phoneField.setMinSize(50,5);
-                        phoneText.setText(phoneField.getText());
 
-                        String rank = rankText.getText();
                         profileGrid.getChildren().remove(rankText);
-                        TextField rankField = new TextField(rank);
-                        rankField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                        rankField.setStyle("-fx-text-fill: #182E3E");
-                        rankField.setMinSize(260,45);
+                        rankField1.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
+                        rankField1.setStyle("-fx-text-fill: red");
+                        rankField1.setMinSize(50,5);
 
-                        String salary = salaryText.getText();
                         profileGrid.getChildren().remove(salaryText);
-                        TextField salaryField = new TextField(salary);
                         salaryField.setFont(Font.font("Helvetica", FontWeight.BOLD,25));
-                        salaryField.setStyle("-fx-text-fill: #182E3E");
-                        salaryField.setMinSize(260,45);
+                        salaryField.setStyle("-fx-text-fill: red");
+                        salaryField.setMinSize(50,5);
 
                         profileGrid.getChildren().remove(mailText);
                         mailField.setFont(Font.font("Helvetica", FontWeight.BOLD,20));
                         mailField.setStyle("-fx-text-fill: red");
                         mailField.setMinSize(50,5);
-                        mailText.setText(mailField.getText());
 
-                        profileGrid.setMaxSize(500,20);
+
+                        //profileGrid.setMaxSize(500,20);
+                        profileGrid.add(serviceNumberField,1,0);
                         profileGrid.add(fullNameField,1,1);
                         profileGrid.add(passportField,1,2);
                         profileGrid.add(phoneField,1,3);
-                        //profileGrid.add(rankField,1,4);
-                        //profileGrid.add(salaryField,1,5);
+                        profileGrid.add(rankField1,1,4);
+                        profileGrid.add(salaryField,1,5);
                         profileGrid.add(mailField,1,6);
 
                         fullData.getChildren().remove(editDataUserButton);
                         fullData.getChildren().add(saveDataUserButton);
+
+
+                    }
+                });
+
+                saveDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        fullNameText.setText(fullNameField.getText());
+                        profileGrid.getChildren().remove(fullNameField);
+
+                        passportText.setText(passportField.getText());
+                        profileGrid.getChildren().remove(passportField);
+
+                        phoneText.setText(phoneField.getText());
+                        profileGrid.getChildren().remove(phoneField);
+
+                        mailText.setText(mailField.getText());
+                        profileGrid.getChildren().remove(mailField);
+
+                        rankText.setText(rankField1.getText());
+                        profileGrid.getChildren().remove(rankField1);
+
+                        salaryText.setText(salaryField.getText());
+                        profileGrid.getChildren().remove(salaryField);
+
+                        serviceNumberText.setText(serviceNumberField.getText());
+                        profileGrid.getChildren().remove(serviceNumberField);
+
+                        profileGrid.add(serviceNumberText,1,0);
+                        profileGrid.add(fullNameText,1,1);
+                        profileGrid.add(passportText,1,2);
+                        profileGrid.add(phoneText,1,3);
+                        profileGrid.add(rankText,1,4);
+                        profileGrid.add(salaryText,1,5);
+                        profileGrid.add(mailText,1,6);
+                        fullData.getChildren().remove(saveDataUserButton);
+                        fullData.getChildren().add(editDataUserButton);
+                        //profileGrid.setMaxSize(600,20);
                     }
                 });
 
@@ -448,22 +490,7 @@ public class fullEmployeeProfile extends TableCell<Employee,Void> {
                 profileGrid.add(rankText,1,4);
                 profileGrid.add(salaryText,1,5);
                 profileGrid.add(mailText,1,6);
-                saveDataUserButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        profileGrid.getChildren().remove(fullNameField);
-                        profileGrid.getChildren().remove(passportField);
-                        profileGrid.getChildren().remove(phoneField);
-                        profileGrid.getChildren().remove(mailField);
-                        profileGrid.add(fullNameText,1,1);
-                        profileGrid.add(passportText,1,2);
-                        profileGrid.add(phoneText,1,3);
-                        profileGrid.add(mailText,1,6);
-                        fullData.getChildren().remove(saveDataUserButton);
-                        fullData.getChildren().add(editDataUserButton);
-                        //profileGrid.setMaxSize(600,20);
-                    }
-                });
+
 
                 Scene profile = new Scene(profilePane,1545,840);
                 stage.setScene(profile);

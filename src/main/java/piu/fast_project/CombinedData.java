@@ -1,41 +1,42 @@
 package piu.fast_project;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 
 import java.sql.Date;
 
-@Entity
-@Table(name = "person")
-public class Person {
-    @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_passport")
+public class CombinedData {
     private long idPassport;
 
-    @Column(name = "surname")
     private String surname;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "birthday")
     private Date birthday;
 
-    public Person() {
-    }
+    private int numberOfGangster;
 
-    public Person(long idPassport, String surname, String name) {
+    public CombinedData(long idPassport, String surname, String name, Date birthday, int numberOfGangster) {
         this.idPassport = idPassport;
         this.surname = surname;
         this.name = name;
+        this.birthday = birthday;
+        this.numberOfGangster = numberOfGangster;
+    }
+
+    public CombinedData() {
+        this.idPassport = 0;
+        this.surname = "surname";
+        this.name = "name";
         this.birthday = java.sql.Date.valueOf("2001-01-01");
+        this.numberOfGangster = 0;
     }
 
     public long getIdPassport() {
         return idPassport;
     }
 
-    public void setIdPassport(int idPassport) {
+    public void setIdPassport(long idPassport) {
         this.idPassport = idPassport;
     }
 
@@ -61,5 +62,13 @@ public class Person {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public int getNumberOfGangster() {
+        return numberOfGangster;
+    }
+
+    public void setNumberOfGangster(int numberOfGangster) {
+        this.numberOfGangster = numberOfGangster;
     }
 }

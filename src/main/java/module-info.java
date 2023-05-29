@@ -1,12 +1,11 @@
 module piu.fast_project {
     requires javafx.controls;
-    requires javafx.fxml;
     requires java.sql;
-    requires java.persistence;
-    requires org.hibernate.orm.core;
     requires java.naming;
-    requires spring.boot.autoconfigure;
+    requires jakarta.persistence;
+    requires org.hibernate.orm.core;
 
-    opens piu.fast_project to javafx.fxml;
+
+    opens piu.fast_project to org.hibernate.orm.core;
     exports piu.fast_project;
 }
