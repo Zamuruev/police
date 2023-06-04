@@ -12,9 +12,6 @@ public class Employee {
     String mail;
     String id_contact;
 
-   /* @OneToMany(mappedBy = "employee")
-    private List<Case> cases;
-*/
     public Employee() {
 
     }

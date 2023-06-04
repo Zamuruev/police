@@ -1,8 +1,5 @@
 package piu.fast_project;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-
 import java.sql.Date;
 
 public class CombinedData {
